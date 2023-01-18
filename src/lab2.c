@@ -10,6 +10,33 @@
 
 
 
+void light_red(){
+  int DELAY = 5000;
+  PORTB = 0b00000100;
+  _delay_ms(DELAY);
+  PROTB = 0b00000000;
+}
+
+void light_blue(){
+  int DELAY = 5000;
+  PORTB = 0b00001000;
+  _delay_ms(DELAY);
+  PROTB = 0b00000000;
+}
+
+void light_green(){
+  int DELAY = 5000;
+  PORTB = 0b00000001;
+  _delay_ms(DELAY);
+  PROTB = 0b00000000;
+}
+
+void light_yellow(){
+  int DELAY = 5000;
+  PORTB = 0b00000010;
+  _delay_ms(DELAY);
+  PROTB = 0b00000000;
+}
 
 
 void blinking_inicial(){ //LEDs parpadean 2 veces 

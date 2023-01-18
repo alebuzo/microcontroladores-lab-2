@@ -38,6 +38,38 @@ void light_yellow(){
   PROTB = 0b00000000;
 }
 
+// Generador de numeros random
+uint8_t rotl(const uint8_t x, int k) {
+    return (x << k) | (x >> (8 - k));
+}
+//seed
+uint8_t s[2] = { 0, 0xA3 };
+
+uint8_t next(void) {
+    uint8_t s0 = s[0];
+    uint8_t s1 = s[1];
+    uint8_t result = s0 + s1;
+
+    s1 ^= s0;
+    s[0] = rotl(s0, 6) ^ s1 ^ (s1 << 1);
+    s[1] = rotl(s1, 3);
+
+    return result;
+}
+// Mantener el numero entre 0 y 3
+int rand(void) {
+    int randi = 0;
+    while (1) {
+        randi = next();
+        if (randi < 4 && randi >= 0) {
+           return randi;
+        }
+    }
+
+}
+
+
+
 
 void blinking_inicial(){ //LEDs parpadean 2 veces 
   int DELAY = 5000;

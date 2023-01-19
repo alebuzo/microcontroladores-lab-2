@@ -7,7 +7,20 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
+
+
+
+int interrupcion_D0 = 0; 
+int interrupcion_D1 = 0; 
+int interrupcion_D2 = 0; 
+int interrupcion_D3 = 0; 
+int button_pressed  = 0; 
+int nivel = 4; 
+int error = 0; 
+int array_random[100] = {}; 
+int array_introducido[100] = {};
 
 
 void light_red(){
@@ -69,8 +82,6 @@ int rand(void) {
 }
 
 
-
-
 void blinking_inicial(){ //LEDs parpadean 2 veces 
   int DELAY = 5000;
   
@@ -103,7 +114,41 @@ void blinking_final(){ //LEDs parpadean 3 veces
   _delay_ms(DELAY);
 } 
 
+void blinking_nivel_correcto(){ //LEDs parpadean 1 vez
+  int DELAY = 5000;
+  
+  PORTB = 0b00000000; 
+  _delay_ms(DELAY);
+  PORTB = 0b00001111; 
+} 
 
+
+void turn_on_lights(int *array_random){ 
+  int DELAY = 2000;
+  for (int i = 0; i < nivel; i++) {
+    int LED = array_random[i];
+  
+    if (LED == 0){
+      _delay_ms(DELAY); 
+      light_green(); 
+    }
+        
+    if (LED == 1){
+      _delay_ms(DELAY);
+      light_yellow();
+    }
+
+    if (LED == 2){
+      _delay_ms(DELAY);
+      light_red();
+    }
+
+    if (LED == 3){
+      _delay_ms(DELAY);
+      light_blue();
+    }
+  }
+}
 
 
 
@@ -131,6 +176,28 @@ void blinking_final(){ //LEDs parpadean 3 veces
 
 
 
+// MANEJO DE INTERRUPCIONES 
+
+ISR (INT0_vect){ 
+interrupcion_D2 = 1; 
+}
+
+ISR (INT1_vect){ 
+interrupcion_D3 = 1; 
+}
+
+ISR(PCINT2_vect) 
+{
+  interrupcion_D0 = 1;
+}
+  
+ISR(PCINT2_vect) 
+{
+  interrupcion_D1 = 1;
+}
+
+
+
 int main(void)
 {
 
@@ -147,66 +214,84 @@ int main(void)
     PCMSK2 |= 0b00000010; // Se habilita el PCINT12 correspondiente al pin D1
 
 
+    sei(); // La función sei() permite el manejo de interrupciones de manera global
+
 //DEFINICIÓN DE SALIDAS 
     DDRB = 0x0F; //Configuracion del puerto B, corresponden a salidas, puertos B0,B1,B2 y B3
 
-  //Parpadear
+  
+  char state = waiting_interrupt; 
+  char next_state = waiting_interrupt;
+
   while (1) {
-    blinking_inicial();
-    _delay_ms(10000);
-    blinking_final();
-    _delay_ms(10000);
-    light_green();
-    _delay_ms(10000);
-
-
-
 
     state = next_state;
+
         switch (state){
 
 
             case (waiting_interrupt):
             
+                if ((interrupcion_D0 == 1) | (interrupcion_D1 == 1) | (interrupcion_D2 == 1) |(interrupcion_D3 == 1)){
+                        blinking_inicial();
+                        interrupcion_D0 = 0; interrupcion_D1 = 0; interrupcion_D2 = 0; interrupcion_D3 = 0;
+                        next_state = start_level;
+                        
+                        array_random[0] = rand(); 
+                        array_random[1] = rand(); 
+                        array_random[2] = rand(); 
+                        array_random[3] = rand(); 
+                        }
+                    
+                    else{
+                        PORTB = 0b00000000;
+                        next_state = waiting_interrupt;
+                    }
+                
             break;
-
 
 
 
 
             case (start_level):
-            
-            break;
 
+                 turn_on_lights(array_random);
+                 next_state = reading_inputs;
+
+            break;
 
 
 
 
             case (reading_inputs):
-            
-            break;
 
+             
+
+            break;
 
 
 
 
             case (check):
-            
+ 
+              
             break;
 
 
 
 
-              case (won):
-            
-            break;
+            case (won):
 
+               
+
+            break;
 
 
 
 
             case (lost):
-            
+
+             
             break;
 
 

@@ -19,8 +19,8 @@ int interrupcion_D3 = 0;
 int button_pressed  = 0; 
 int nivel = 4; 
 int error = 0; 
-int array_random[100] = {}; 
-int array_introducido[100] = {};
+int array_random[14] = {}; 
+int array_introducido[14] = {};
 
 
 void light_red(){
@@ -207,13 +207,13 @@ int main(void)
 
     GIMSK |= (1<<INT1); // interrupción externa en D3
 
-    GIMSK |= (1<<PCIE2); // Se habilita el PCIE2 donde estan las interrupciones PCINT11
+    GIMSK |= (1<<PCIE2); // Se habilita el PCIE2 donde estan las interrupciones PCINT11 
 
-    GIMSK |= (1<<PCIE1); // Se habilita el PCIE2 donde estan las interrupciones PCINT8
+    GIMSK |= (1<<PCIE1); // Se habilita el PCIE1 donde estan las interrupciones PCINT8
+    
+    PCMSK1 |= 0b00000001; // Se habilita el PCINT11 correspondiente al pin D0
 
-    PCMSK2 |= 0b00000001; // Se habilita el PCINT11 correspondiente al pin D0
-
-    PCMSK1 |= 0b00000001; // Se habilita el PCINT12 correspondiente al pin A0
+    PCMSK2 |= 0b00000001; // Se habilita el PCINT12 correspondiente al pin D1
 
 
     sei(); // La función sei() permite el manejo de interrupciones de manera global
@@ -267,7 +267,7 @@ int main(void)
 
             case (reading_inputs):
 
-              if (button_pressed == nivel) {
+                if (button_pressed == nivel) {
                     next_state = check;
                     button_pressed = 0; 
                 }
@@ -303,15 +303,13 @@ int main(void)
                     }
                 }
 
-             
-
             break;
 
 
 
 
             case (check):
-
+ 
               // inicialmente se supone que no hay errores
                 error = 0; 
 
@@ -333,14 +331,14 @@ int main(void)
                     error = 0; 
                 }
                
-              
             break;
 
 
 
 
             case (won):
-              array_random[nivel] = rand(); 
+
+                array_random[nivel] = rand(); 
 
                 if(nivel < 16){
                 nivel = nivel + 1; //se enciende un led más que el nivel anterior
@@ -351,19 +349,17 @@ int main(void)
                 blinking_nivel_correcto();
                 next_state = start_level;
 
-               
-
             break;
 
 
 
 
             case (lost):
-              blinking_final();
-              _delay_ms(15000);
-              next_state = waiting_interrupt;
 
-             
+                blinking_final();
+                _delay_ms(15000);
+                next_state = waiting_interrupt;
+
             break;
 
 

@@ -265,6 +265,42 @@ int main(void)
 
             case (reading_inputs):
 
+              if (button_pressed == nivel) {
+                    next_state = check;
+                    button_pressed = 0; 
+                }
+                else{
+                    next_state = reading_inputs; 
+
+                    if (interrupcion_D2 == 1){
+                        interrupcion_D2 = 0;
+                        light_green(); 
+                        array_introducido[button_pressed] = 0;
+                        button_pressed = button_pressed + 1;
+                    }
+
+                    else if (interrupcion_D3 == 1){
+                        interrupcion_D3 = 0;
+                        light_yellow(); 
+                        array_introducido[button_pressed] = 1;
+                        button_pressed = button_pressed + 1;
+                    }
+
+                    else if (interrupcion_D0 == 1){
+                        interrupcion_D0 = 0; 
+                        light_red(); 
+                        array_introducido[button_pressed] = 2;
+                        button_pressed = button_pressed + 1;
+                    }
+
+                    else if (interrupcion_D1 == 1){
+                        interrupcion_D1 = 0;
+                        light_blue(); 
+                        array_introducido[button_pressed] = 3;
+                        button_pressed = button_pressed + 1;
+                    }
+                }
+
              
 
             break;

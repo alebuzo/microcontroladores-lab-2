@@ -14,28 +14,28 @@ void light_red(){
   int DELAY = 5000;
   PORTB = 0b00000100;
   _delay_ms(DELAY);
-  PROTB = 0b00000000;
+  PORTB = 0b00000000;
 }
 
 void light_blue(){
   int DELAY = 5000;
   PORTB = 0b00001000;
   _delay_ms(DELAY);
-  PROTB = 0b00000000;
+  PORTB = 0b00000000;
 }
 
 void light_green(){
   int DELAY = 5000;
   PORTB = 0b00000001;
   _delay_ms(DELAY);
-  PROTB = 0b00000000;
+  PORTB = 0b00000000;
 }
 
 void light_yellow(){
   int DELAY = 5000;
   PORTB = 0b00000010;
   _delay_ms(DELAY);
-  PROTB = 0b00000000;
+  PORTB = 0b00000000;
 }
 
 // Generador de numeros random
@@ -73,6 +73,7 @@ int rand(void) {
 
 void blinking_inicial(){ //LEDs parpadean 2 veces 
   int DELAY = 5000;
+  
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
   PORTB = 0b00001111; 
@@ -80,13 +81,12 @@ void blinking_inicial(){ //LEDs parpadean 2 veces
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
   PORTB = 0b00001111; 
-  _delay_ms(DELAY);
-  PORTB = 0b00000000;
-  _delay_ms(7000);
+
 } 
 
 void blinking_final(){ //LEDs parpadean 3 veces 
   int DELAY = 5000;
+  
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
   PORTB = 0b00001111; 
@@ -102,6 +102,32 @@ void blinking_final(){ //LEDs parpadean 3 veces
   PORTB = 0b00000000;
   _delay_ms(DELAY);
 } 
+
+
+
+
+
+
+//DEFINICIÓN DE ESTADOS 
+#define waiting_interrupt 0 //esperando cambios 
+//siguiente estado start_level
+
+#define start_level 1 // se muestra el patrón
+//siguiente estado reading_inputs
+
+#define reading_inputs 2 //se recibe el patrón del usuario
+//siguiente estado check
+
+#define check 3 //se revisa el patrón ingresado para ver si coincide con el mostrado
+//siguiente estado puede ser won o lost
+
+#define won 4 //se gana el nivel y se sigue con el siguiente
+//siguiente estado start_level
+
+#define  lost 5 //se indica que el patrón no fue correcto parpadeando 3 veces
+//siguiente estado debe ser waiting_interrupt
+
+
 
 
 
@@ -129,5 +155,63 @@ int main(void)
     blinking_inicial();
     _delay_ms(10000);
     blinking_final();
+    _delay_ms(10000);
+    light_green();
+    _delay_ms(10000);
+
+
+
+
+    state = next_state;
+        switch (state){
+
+
+            case (waiting_interrupt):
+            
+            break;
+
+
+
+
+
+            case (start_level):
+            
+            break;
+
+
+
+
+
+            case (reading_inputs):
+            
+            break;
+
+
+
+
+
+            case (check):
+            
+            break;
+
+
+
+
+              case (won):
+            
+            break;
+
+
+
+
+
+            case (lost):
+            
+            break;
+
+
+}
+
+
   }
 }

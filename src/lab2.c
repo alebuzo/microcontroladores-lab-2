@@ -309,7 +309,28 @@ int main(void)
 
 
             case (check):
- 
+            
+              // inicialmente se supone que no hay errores
+                error = 0; 
+
+                int i = 0;
+
+                while (i < nivel) {
+                   
+                    if (array_random[i] != array_introducido[i]) {
+                        error = 1;
+                    }
+                    i = i + 1;
+                }
+
+                if (error == 0){
+                    next_state = won;
+                }
+                else if (error == 1){
+                    next_state = lost;
+                    error = 0; 
+                }
+               
               
             break;
 

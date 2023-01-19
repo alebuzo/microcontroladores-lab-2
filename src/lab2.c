@@ -18,34 +18,36 @@ int interrupcion_D2 = 0;
 int interrupcion_D3 = 0; 
 int button_pressed  = 0; 
 int nivel = 4; 
-int error = 0; 
+int error = 0;
+int low_edge_int1 = 0;
+int low_edge_int2 = 0;
 int array_random[14] = {}; 
 int array_introducido[14] = {};
 
 
 void light_red(){
-  int DELAY = 5000;
+  int DELAY = 8000;
   PORTB = 0b00000100;
   _delay_ms(DELAY);
   PORTB = 0b00000000;
 }
 
 void light_blue(){
-  int DELAY = 5000;
+  int DELAY = 8000;
   PORTB = 0b00001000;
   _delay_ms(DELAY);
   PORTB = 0b00000000;
 }
 
 void light_green(){
-  int DELAY = 5000;
+  int DELAY = 8000;
   PORTB = 0b00000001;
   _delay_ms(DELAY);
   PORTB = 0b00000000;
 }
 
 void light_yellow(){
-  int DELAY = 5000;
+  int DELAY = 8000;
   PORTB = 0b00000010;
   _delay_ms(DELAY);
   PORTB = 0b00000000;
@@ -83,7 +85,7 @@ int rand(void) {
 
 
 void blinking_inicial(){ //LEDs parpadean 2 veces 
-  int DELAY = 5000;
+  int DELAY = 8000;
   
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
@@ -91,12 +93,14 @@ void blinking_inicial(){ //LEDs parpadean 2 veces
   _delay_ms(DELAY);
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
-  PORTB = 0b00001111; 
+  PORTB = 0b00001111;
+  _delay_ms(DELAY);
+  PORTB = 0b00000000; 
 
 } 
 
 void blinking_final(){ //LEDs parpadean 3 veces 
-  int DELAY = 5000;
+  int DELAY = 8000;
   
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
@@ -115,16 +119,18 @@ void blinking_final(){ //LEDs parpadean 3 veces
 } 
 
 void blinking_nivel_correcto(){ //LEDs parpadean 1 vez
-  int DELAY = 5000;
+  int DELAY = 8000;
   
   PORTB = 0b00000000; 
   _delay_ms(DELAY);
   PORTB = 0b00001111; 
+  _delay_ms(DELAY);
+  PORTB = 0b00000000; 
 } 
 
 
 void turn_on_lights(int *array_random){ 
-  int DELAY = 2000;
+  int DELAY = 8000;
   for (int i = 0; i < nivel; i++) {
     int LED = array_random[i];
   
@@ -188,12 +194,27 @@ interrupcion_D3 = 1;
 
 ISR(PCINT2_vect) 
 {
-  interrupcion_D0 = 1;
+  //interrupcion_D0 = 1;
+ if(low_edge_int2 == 0){
+    low_edge_int2 = low_edge_int2 + 1;
+  }
+  else if (low_edge_int2 == 1){
+    interrupcion_D0 = 1;
+    low_edge_int2 = 0;
+  }
+  
 }
   
 ISR(PCINT1_vect) 
 {
-  interrupcion_D1 = 1;
+  //interrupcion_D1 = 1;
+  if(low_edge_int1 == 0){
+    low_edge_int1 = low_edge_int1 + 1;
+  }
+  else if (low_edge_int1 == 1){
+    interrupcion_D1 = 1;
+    low_edge_int1 = 0;
+  }
 }
 
 
@@ -213,7 +234,7 @@ int main(void)
     
     PCMSK1 |= 0b00000001; // Se habilita el PCINT11 correspondiente al pin D0
 
-    PCMSK2 |= 0b00000001; // Se habilita el PCINT12 correspondiente al pin D1
+    PCMSK2 |= 0b00000001; // Se habilita el PCINT8 correspondiente al pin D1
 
 
     sei(); // La función sei() permite el manejo de interrupciones de manera global
@@ -235,14 +256,30 @@ int main(void)
             case (waiting_interrupt):
             
                 if ((interrupcion_D0 == 1) | (interrupcion_D1 == 1) | (interrupcion_D2 == 1) |(interrupcion_D3 == 1)){
-                        blinking_inicial();
+                      if(interrupcion_D0 == 1){
+                        light_green();
+
+                      } else if(interrupcion_D1){
+                        light_yellow();
+                      } else if(interrupcion_D2){
+                        light_red(); //INTERRUPCION EXTRANA D2
+                      } else if(interrupcion_D3){
+                        light_blue();
+                      }
+                        
+                        //blinking_inicial();
                         interrupcion_D0 = 0; interrupcion_D1 = 0; interrupcion_D2 = 0; interrupcion_D3 = 0;
                         next_state = start_level;
                         
-                        array_random[0] = rand(); 
+                        array_random[0] = 0; //verde
+                        array_random[1] = 1; //amarillo
+                        array_random[2] = 2; //rojo
+                        array_random[3] = 3; //azul
+                        /*array_random[0] = rand(); 
                         array_random[1] = rand(); 
                         array_random[2] = rand(); 
-                        array_random[3] = rand(); 
+                        array_random[3] = rand();*/
+                        //array_random[0] = 3;  
                         }
                     
                     else{

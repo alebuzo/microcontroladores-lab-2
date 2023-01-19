@@ -309,7 +309,7 @@ int main(void)
 
 
             case (check):
-            
+
               // inicialmente se supone que no hay errores
                 error = 0; 
 
@@ -338,6 +338,16 @@ int main(void)
 
 
             case (won):
+              array_random[nivel] = rand(); 
+
+                if(nivel < 16){
+                nivel = nivel + 1; //se enciende un led más que el nivel anterior
+                }
+                else{
+                nivel = 4; 
+                }
+                blinking_nivel_correcto();
+                next_state = start_level;
 
                
 
@@ -347,6 +357,9 @@ int main(void)
 
 
             case (lost):
+              blinking_final();
+              _delay_ms(15000);
+              next_state = waiting_interrupt;
 
              
             break;

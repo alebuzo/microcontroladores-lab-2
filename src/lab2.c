@@ -191,7 +191,7 @@ ISR(PCINT2_vect)
   interrupcion_D0 = 1;
 }
   
-ISR(PCINT2_vect) 
+ISR(PCINT1_vect) 
 {
   interrupcion_D1 = 1;
 }
@@ -207,11 +207,13 @@ int main(void)
 
     GIMSK |= (1<<INT1); // interrupción externa en D3
 
-    GIMSK |= (1<<PCIE2); // Se habilita el PCIE2 donde estan las interrupciones PCINT11 Y PCINT12 
+    GIMSK |= (1<<PCIE2); // Se habilita el PCIE2 donde estan las interrupciones PCINT11
+
+    GIMSK |= (1<<PCIE1); // Se habilita el PCIE2 donde estan las interrupciones PCINT8
 
     PCMSK2 |= 0b00000001; // Se habilita el PCINT11 correspondiente al pin D0
 
-    PCMSK2 |= 0b00000010; // Se habilita el PCINT12 correspondiente al pin D1
+    PCMSK1 |= 0b00000001; // Se habilita el PCINT12 correspondiente al pin A0
 
 
     sei(); // La función sei() permite el manejo de interrupciones de manera global
